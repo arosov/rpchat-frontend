@@ -1,0 +1,56 @@
+name: Deploy from Supabase Storage to GHPages
+
+defaults:
+  run:
+    shell: bash
+
+permissions:
+  contents: write
+  id-token: write
+
+on:
+  workflow_dispatch:
+
+jobs:
+  download:
+    name: Create artifact from Supabase Storage
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download from public storage
+        run: curl -O https://jiwuddfzzvilvpahhmpe.supabase.co/storage/v1/object/public/releases/wasmJs/wasm-release.tbz2
+
+      - name: Extract webapp
+        run: |
+          mkdir extracted
+          tar xf wasm-release.tbz2 -C extracted
+
+      - name: Upload Artifact
+        if: github.ref == 'refs/heads/main'
+        uses: actions/upload-pages-artifact@v3
+        with:
+          # location of the coverage artifacts
+          path: "./extracted"
+
+  deploy-webapp:
+    name: Deploy webapp to GHPages
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    needs: download
+
+    permissions:
+      pages: write
+      id-token: write
+
+    environment:
+      # environment created automatically by GitHub
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+
+    steps:
+      - name: Setup Pages
+        if: github.ref == 'refs/heads/main'
+        uses: actions/configure-pages@v4
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
