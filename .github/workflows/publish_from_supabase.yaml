@@ -10,6 +10,8 @@ permissions:
 
 on:
   workflow_dispatch:
+  repository_dispatch:
+    types: [remote-trigger]
 
 jobs:
   download:
