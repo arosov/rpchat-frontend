@@ -19,12 +19,13 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Download from public storage
-        run: curl -O https://jiwuddfzzvilvpahhmpe.supabase.co/storage/v1/object/public/releases/wasmJs/wasm-release.tbz2
+        run: |
+          curl -O https://jiwuddfzzvilvpahhmpe.supabase.co/storage/v1/object/public/releases/wasmJs/wasm-release.xz?t=$(date +%s)
 
       - name: Extract webapp
         run: |
           mkdir extracted
-          tar xf wasm-release.tbz2 -C extracted
+          tar xf wasm-release.xz -C extracted
 
       - name: Upload Artifact
         if: github.ref == 'refs/heads/main'
