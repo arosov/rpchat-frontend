@@ -1,4 +1,4 @@
-name: Deploy from Supabase Storage to GHPages
+name: Deploy rpchat.devcraft.ovh
 
 defaults:
   run:
@@ -15,17 +15,20 @@ on:
 
 jobs:
   download:
-    name: Create artifact from Supabase Storage
+    name: Create artifact from Cloud Storage
     runs-on: ubuntu-latest
     steps:
       - name: Download from public storage
         run: |
-          curl -O https://jiwuddfzzvilvpahhmpe.supabase.co/storage/v1/object/public/releases/wasmJs/wasm-release.xz?t=$(date +%s)
+          epoch=$(date +%s)
+          curl -o wasm-release.tar.xz "https://storage.googleapis.com/rpchat-releases/wasmJs/wasm-release.tar.xz?t=$epoch"
+          ls -alhR
 
       - name: Extract webapp
         run: |
           mkdir extracted
-          tar xf wasm-release.xz -C extracted
+          ls -alhR
+          tar xf wasm-release.tar.xz -C extracted
 
       - name: Upload Artifact
         if: github.ref == 'refs/heads/main'
